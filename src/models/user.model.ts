@@ -1,6 +1,18 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasOne, model, property} from '@loopback/repository';
+import {Customer} from './customer.model';
+import {Roles} from './roles.model';
 
-@model()
+enum UserRole {
+  SuperAdmin,
+  Admin,
+  Subscriber,
+}
+
+@model({
+  settings: {
+    postgresql: {schema: 'public', table: 'users'},
+  },
+})
 export class User extends Entity {
   @property({
     type: 'number',
@@ -44,7 +56,13 @@ export class User extends Entity {
   @property({
     type: 'number',
   })
-  role?: number;
+  role?: UserRole;
+
+  @hasOne(() => Customer)
+  customer: Customer;
+
+  @hasOne(() => Roles)
+  roles: Roles;
 
   constructor(data?: Partial<User>) {
     super(data);
